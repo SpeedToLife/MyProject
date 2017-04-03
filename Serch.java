@@ -1,11 +1,21 @@
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -18,9 +28,11 @@ import java.io.ObjectOutputStream;
  * @author Лена
  */
 public class Serch extends javax.swing.JFrame implements Runnable {
-
+//        deserData();
     private static String sqlEx;
     private static Object obj;
+    private String address;
+    private String serverPort;
 
     /**
      * Creates new form Serch
@@ -228,42 +240,71 @@ public class Serch extends javax.swing.JFrame implements Runnable {
 
     private void jButton6MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton6MouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton6MouseClicked
- private static Object deserData(String sqlEx, InputStream fileIn) {
-        Object retObject = null;
-       try {
-       FileInputStream fileOut = new FileInputStream(sqlEx+".ser");
-       ObjectInputStream in = new ObjectInputStream(fileIn);
-       retObject = in.readObject();
-       fileIn.close();
-       in.close();
-    } catch (FileNotFoundException e) {
-        System.out.println("Файл не найден!");
-        System.exit(1);
-    } catch (IOException e) {
-      System.out.println("Ошибка ввода/вывода!"); 
-      System.exit(2);
-    } catch (ClassNotFoundException e) {
-        System.out.println("Класс не найден!");
-        System.exit(3);
-    }
-       return retObject;
-    }
- private static void serData() {
         try {
-       FileOutputStream fileOut = new FileOutputStream(sqlEx+".ser");
-       ObjectOutputStream out = new ObjectOutputStream(fileOut);
-       out.writeObject(obj);
-       fileOut.close();
-       out.close();
-    } catch (FileNotFoundException e) {
-        System.out.println("Файл не найден!");
-        System.exit(1);
-    } catch (IOException e) {
-      System.out.println("Ошибка ввода/вывода!"); 
-      System.exit(2);
-    }
-    }
+                InetAddress ipAddress = InetAddress.getByName(address);
+                System.out.println("Any of you heard of a socket with IP address " + address + " and port " + serverPort + "?");
+                Socket socket = Socket(ipAddress, serverPort);
+                System.out.println("Yes! I just got hold of the program.");
+                
+                InputStream sin = socket.getInputStream();
+                OutputStream sout = socket.getOutputStream();
+                
+                
+                DataInputStream in = new DataInputStream(sin);
+                DataOutputStream out = new DataOutputStream(sout);
+                
+                
+                BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
+                String line = null;
+                System.out.println("Type in something and press enter. Will send it to the server and tell ya what it thinks.");
+                System.out.println();
+                
+                while (true) {
+                    line = keyboard.readLine();
+                    System.out.println("Sending this line to the server...");
+                    out.writeUTF(line); // отсылаем введенную строку текста серверу.
+                    out.flush();
+                }   } catch (UnknownHostException ex) {
+                Logger.getLogger(New.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(New.class.getName()).log(Level.SEVERE, null, ex);
+            }
+    }//GEN-LAST:event_jButton6MouseClicked
+// private static Object deserData(String sqlEx, InputStream fileIn) {
+//        Object retObject = null;
+//       try {
+//       FileInputStream fileOut = new FileInputStream(sqlEx+".ser");
+//       ObjectInputStream in = new ObjectInputStream(fileIn);
+//       retObject = in.readObject();
+//       fileIn.close();
+//       in.close();
+//    } catch (FileNotFoundException e) {
+//        System.out.println("Файл не найден!");
+//        System.exit(1);
+//    } catch (IOException e) {
+//      System.out.println("Ошибка ввода/вывода!"); 
+//      System.exit(2);
+//    } catch (ClassNotFoundException e) {
+//        System.out.println("Класс не найден!");
+//        System.exit(3);
+//    }
+//       return retObject;
+//    }
+// private static void serData() {
+//        try {
+//       FileOutputStream fileOut = new FileOutputStream(sqlEx+".ser");
+//       ObjectOutputStream out = new ObjectOutputStream(fileOut);
+//       out.writeObject(obj);
+//       fileOut.close();
+//       out.close();
+//    } catch (FileNotFoundException e) {
+//        System.out.println("Файл не найден!");
+//        System.exit(1);
+//    } catch (IOException e) {
+//      System.out.println("Ошибка ввода/вывода!"); 
+//      System.exit(2);
+//    }
+//    }
     /**
      * @param args the command line arguments
      */
@@ -297,7 +338,7 @@ public class Serch extends javax.swing.JFrame implements Runnable {
                 new Serch().setVisible(true);
             }
         });
-        serData();
+//        serData();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -322,5 +363,9 @@ public class Serch extends javax.swing.JFrame implements Runnable {
     @Override
     public void run() {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private Socket Socket(InetAddress ipAddress, String serverPort) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

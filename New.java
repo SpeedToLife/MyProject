@@ -1,6 +1,19 @@
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
+        
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -13,12 +26,21 @@ import javax.swing.JOptionPane;
  */
 public class New extends javax.swing.JFrame {
 
+    private String address;
+    private String serverPort;
+
     /**
      * Creates new form New
      */
     public New() {
         initComponents();
     }
+//public static void main(String[] args) {
+//    DataObject dataObj = new Dataobject();
+//    Gson gson = new Gson();
+//    String json = gson.toJson(dataObj);
+//    DataObject obj = gson.fromJson(json, DataObject.class);
+//}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -213,13 +235,48 @@ public class New extends javax.swing.JFrame {
                 jTextField3.getText().trim().length()==0 || jTextField4.getText().trim().length()==0)
             {
             JOptionPane.showMessageDialog(null, "Заполните все поля!", "Admin", JOptionPane.ERROR_MESSAGE);
-            } else dispose(); {
-        }
+            } else {
+            try {
+                InetAddress ipAddress = InetAddress.getByName(address);
+                System.out.println("Any of you heard of a socket with IP address " + address + " and port " + serverPort + "?");
+                Socket socket = Socket(ipAddress, serverPort);
+                System.out.println("Yes! I just got hold of the program.");
+                
+                InputStream sin = socket.getInputStream();
+                OutputStream sout = socket.getOutputStream();
+                
+                
+                DataInputStream in = new DataInputStream(sin);
+                DataOutputStream out = new DataOutputStream(sout);
+                
+                
+                BufferedReader keyboard = new BufferedReader(new InputStreamReader(System.in));
+                String line = null;
+                System.out.println("Type in something and press enter. Will send it to the server and tell ya what it thinks.");
+                System.out.println();
+                
+                while (true) {
+                    line = keyboard.readLine();
+                    System.out.println("Sending this line to the server...");
+                    out.writeUTF(line); // отсылаем введенную строку текста серверу.
+                    out.flush();
+                }   } catch (UnknownHostException ex) {
+                Logger.getLogger(New.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(New.class.getName()).log(Level.SEVERE, null, ex);
+            }
+             dispose();
     }//GEN-LAST:event_jButton1MouseClicked
+    }
 
+//    private Socket Socket(InetAddress ipAddress) {
+//        Socket socket = new Socket(ipAddress, serverPort);
+//        return socket;
+//    }
     /**
      * @param args the command line arguments
      */
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -271,4 +328,8 @@ public class New extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField3;
     private javax.swing.JTextField jTextField4;
     // End of variables declaration//GEN-END:variables
+
+    private Socket Socket(InetAddress ipAddress, String serverPort) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }
